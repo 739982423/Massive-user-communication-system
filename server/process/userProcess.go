@@ -169,7 +169,8 @@ func (u *UserProcess) ServerProcessLogin(mes *message.Message) (user *message.Us
 		//为了让客户端收到服务器此时的“用户在线列表”，需要把这个列表放入传回客户端的mes中(传回用户名而不是用户id)
 		for _, val := range UserMgrPtr.OnlineUser {
 			var tmpUser message.User = *val.User
-			tmpUser.Passwd = "Unknown"
+			tmpUser.Passwd = ""
+			tmpUser.UserStatus = 1
 			loginResMes.OnlineUsers = append(loginResMes.OnlineUsers, tmpUser)
 		}
 

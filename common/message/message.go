@@ -6,6 +6,7 @@ const (
 	RigisterMesType			= 	"RigisterMes"
 	RigisterResMesType 		= 	"RigisterResMes"
 	NotifyUserStatusMesType = 	"NotifyUserStatusMes"
+	SmsMesType 				= 	"SmsMes"
 )
 
 type Message struct {
@@ -40,4 +41,9 @@ type NotifyUserStatusMes struct {
 	UserName string		`json:"userName"`
 	UserId string 		`json:"userId"`
 	Status int			`json:"status"`
+}
+
+type SmsMes struct {
+	User User			`json:"user"`
+	Content string		`json:"content"`
 }

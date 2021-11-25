@@ -48,6 +48,18 @@ func (p *Processor) ServerProcessMes(mes *message.Message) (err error) {
 		if err != nil {
 			fmt.Println("ServerProcessMes: 处理注册mes错误，err =", err)
 		}
+
+	case message.SmsMesType:
+		fmt.Println("ServerProcessMes: 该mes的类型是群发信息，开始处理...")
+		sp := &process.SmsProcess{
+			Conn : p.Conn,
+			User : *p.userProcessPtr.User,
+		}
+		err = sp.ServerReceiveGroupMes(mes)
+		if err != nil {
+			fmt.Println("ServerProcessMes: 处理群发消息错误，err =", err)
+		} 
+		
 	default:
 		fmt.Println("ServerProcessMes: 未知类型，程序返回")
 		// 	break
@@ -69,6 +81,7 @@ func (p *Processor) mainProcess() (err error) {
 			if err != io.EOF {
 				up := p.userProcessPtr
 				up.NotifyOtherStateChange(0)
+				process.UserMgrPtr.DelOnlineUser(up)
 			}
 			fmt.Println("mainProcess: readPkg(conn) err, err =", err)
 			return err

@@ -7,6 +7,8 @@ import (
 	"time"
 )
 
+var listeningPort string = "8889"
+var listeningIP string = "10.62.157.41"
 
 func startGoRoutine(conn net.Conn) {
 	defer conn.Close()
@@ -32,7 +34,7 @@ func main() {
 
 	//启动服务程序
 	fmt.Println("main: 服务器已启动...")
-	listener, err := net.Listen("tcp", "127.0.0.1:8889")
+	listener, err := net.Listen("tcp", listeningIP + ":" + listeningPort)
 	if err != nil {
 		fmt.Printf("main: net.Listen err, err = %v \n", err)
 	} else {

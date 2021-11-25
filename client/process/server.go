@@ -2,16 +2,20 @@ package process
 
 import (
 	"encoding/json"
+	"finalProject/client/model"
 	"finalProject/client/utils"
 	"finalProject/common/message"
 	"fmt"
 	"net"
-	"os"
+	_"os"
 )
+
 var OnlineUserMap *ClientOnlineUser
+var CurUser model.CurUser //声明一个存储当前客户端登录的用户信息的结构体，我们将在用户登录成功后初始化它
 type ClientOnlineUser struct {
 	OnlineUser map[string]message.User
 }
+
 func init() {
 	OnlineUserMap = &ClientOnlineUser{
 		OnlineUser: make(map[string]message.User, 64),
@@ -31,15 +35,42 @@ func ShowMenu() {
 		switch key {
 		case 1:
 			fmt.Println("\t\t\t1. 显示在线用户列表")
+			ShowOnlineUsers()
 		case 2:
 			fmt.Println("\t\t\t2. 发送消息")
+			var content string
+			fmt.Println("请输入：")
+			fmt.Scanln(&content)
+			sp := SmsProcess{}
+			sp.ClientSendGroupMes(content)
 		case 3:
 			fmt.Println("\t\t\t3. 信息列表")
+			fmt.Println("---------------------------------")
+			fmt.Println(CurUser)
+			fmt.Println("---------------------------------")
 		default:
 			fmt.Println("\t\t\t4. 退出系统")
-			os.Exit(0)
+			// os.Exit(0)
 		}
 	}
+}
+
+func ShowOnlineUsers() (err error) {
+	onlineList := make([]string, 0)
+	for _, v := range OnlineUserMap.OnlineUser {
+		if v.UserStatus == 1 {
+			onlineList = append(onlineList, v.UserName)
+		}
+	}
+	if len(onlineList) > 1 {
+		fmt.Println("当前在线用户有：")
+		for i := 0; i < len(onlineList); i++ {
+			fmt.Println(onlineList[i])
+		}
+	} else {
+		fmt.Println("当前无其他在线用户！")
+	}
+	return
 }
 
 func ClientProcessMes(mes *message.Message) (err error) {
@@ -52,6 +83,15 @@ func ClientProcessMes(mes *message.Message) (err error) {
 		if err != nil {
 			fmt.Println("ClientProcessMes: 处理状态变化信息失败，err =", err)
 		}
+
+	case message.SmsMesType:
+		fmt.Println("ClientProcessMes:该mes的类型是群发消息，开始处理...")
+		sp := SmsProcess{}
+		err = sp.ClientReceiveGroupMes(mes)
+		if err != nil {
+			fmt.Println("ClientProcessMes: 解析接收到的群发信息失败，err =", err)
+		}
+		
 	default:
 		fmt.Println("ClientProcessMes:未知类型，程序返回")
 		// 	break
@@ -74,6 +114,7 @@ func ClientProcessStateChange(mes *message.Message) (err error) {
 	changeId := stateChangeMes.Status
 	userId := stateChangeMes.UserId
 	userName := stateChangeMes.UserName
+
 	if changeId == 1 {
 		fmt.Printf("%v上线了! \n", userName)
 	} else if changeId == 0 {
@@ -81,16 +122,29 @@ func ClientProcessStateChange(mes *message.Message) (err error) {
 	}
 
 	//为了修改map的value值，需要先取出来原先的值，然后修改之后再放回去
-	var user message.User = OnlineUserMap.OnlineUser[userId]
-	user.UserStatus = changeId
-	OnlineUserMap.OnlineUser[userId] = user 
-	
+	v, ok := OnlineUserMap.OnlineUser[userId]
+	if ok {
+		fmt.Println("map中有user，修改状态前", v)
+		v.UserStatus = changeId
+		OnlineUserMap.OnlineUser[userId] = v
+		fmt.Println("map中有user，修改状态后", v)
+	} else {
+		var user message.User = message.User{
+			UserId:     userId,
+			UserName:   userName,
+			UserStatus: changeId,
+		}
+		OnlineUserMap.OnlineUser[userId] = user
+		fmt.Println("map中无user，添加user", user)
+	}
+	fmt.Println("此时的在线列表:", OnlineUserMap.OnlineUser)
+
 	return
 }
 
 func KeepConnection(conn net.Conn) {
 	tf := &utils.Transfer{
-		Conn : conn,
+		Conn: conn,
 	}
 
 	for {

@@ -10,6 +10,7 @@ import (
 type UserProcess struct {
 	//字段
 }
+var ipAddress = "10.62.157.41:8889"
 
 func (u *UserProcess) RigisterFunc() (err error) {
 	//进入注册函数
@@ -28,7 +29,8 @@ func (u *UserProcess) RigisterFunc() (err error) {
 
 	//1. 连接到服务器
 	fmt.Println("RigisterFunc: 获取到注册请求，正在连接服务器...")
-	conn, err := net.Dial("tcp", "127.0.0.1:8889")
+	// conn, err := net.Dial("tcp", "127.0.0.1:8889")
+	conn, err := net.Dial("tcp", ipAddress)
 	if err != nil {
 		fmt.Printf("net.Dial err, err = %v \n", err)
 		return
@@ -116,14 +118,17 @@ func (u *UserProcess) LoginFunc() (err error) {
 	fmt.Print("请输入密码:")
 	fmt.Scanln(&passwd)
 	
+	originUserId := userId
 	//1. 连接到服务器
 	fmt.Println("LoginFunc: 获取到登录请求，正在连接服务器...")
-	conn, err := net.Dial("tcp", "127.0.0.1:8889")
+	// conn, err := net.Dial("tcp", "127.0.0.1:8889")
+	conn, err := net.Dial("tcp", ipAddress)
 	if err != nil {
 		fmt.Printf("net.Dial err, err = %v \n", err)
 		return
 	}
 	fmt.Println("LoginFunc: 连接成功，现在开始制作序列化后的登录请求字符串...")
+	//fmt.Println("当前连接是：", conn)
 	//延时关闭连接，记得及时写上
 	defer conn.Close()
 
@@ -186,7 +191,8 @@ func (u *UserProcess) LoginFunc() (err error) {
 	if loginResMes.Code == 100 {
 		fmt.Println("LoginFunc:", loginResMes.Information)
 		//登录成功，首先显示一下当前在线用户列表
-		// //创建一个客户端维护的当前在线用户列表
+		
+		// 创建一个客户端维护的当前在线用户列表
 		// var OnlineUserMap ClientOnlineUser
 		// OnlineUserMap.OnlineUser = make(map[string]message.User)
 
@@ -199,14 +205,27 @@ func (u *UserProcess) LoginFunc() (err error) {
 			userId = val.UserId
 			OnlineUserMap.OnlineUser[userId] = val
 		}
-
+		fmt.Println("OnlineUserMap.OnlineUser", OnlineUserMap.OnlineUser)
 		//展示当前在线用户
 		fmt.Println("当前在线的用户有：")
+
+		var myself message.User
 		for _, user := range OnlineUserMap.OnlineUser {	//遍历map时如果只填一个值，则对应的是遍历key
+			if user.UserId == originUserId {
+				myself = user
+			}
 			fmt.Println(user.UserName)
 		}
 		fmt.Println()
-		
+		// fmt.Println("---------------------------------")
+		// fmt.Println(CurUser)
+		//登录成功，初始化客户端存储当前登录用户信息的结构体
+		CurUser.Conn = conn
+		// fmt.Println("---------------------------------")
+		// fmt.Println("CurUser.Conn = ", CurUser.Conn)
+		CurUser.User = myself
+		// fmt.Println("CurUser.User =", CurUser.User)
+		// fmt.Println("---------------------------------")
 		//开启协程保持与服务器的连接
 		go KeepConnection(conn)
 		ShowMenu()
