@@ -74,18 +74,18 @@ func ShowOnlineUsers() (err error) {
 }
 
 func ClientProcessMes(mes *message.Message) (err error) {
-	fmt.Println("ClientProcessMes: 客户端收到服务器发来的mes...")
-	fmt.Println("ClientProcessMes: 正在验证mes类型...")
+	// fmt.Println("ClientProcessMes: 客户端收到服务器发来的mes...")
+	// fmt.Println("ClientProcessMes: 正在验证mes类型...")
 	switch mes.Type {
 	case message.NotifyUserStatusMesType:
-		fmt.Println("ClientProcessMes:该mes的类型是用户状态信息，开始处理...")
+		// fmt.Println("ClientProcessMes:该mes的类型是用户状态信息，开始处理...")
 		err = ClientProcessStateChange(mes)
 		if err != nil {
 			fmt.Println("ClientProcessMes: 处理状态变化信息失败，err =", err)
 		}
 
 	case message.SmsMesType:
-		fmt.Println("ClientProcessMes:该mes的类型是群发消息，开始处理...")
+		// fmt.Println("ClientProcessMes:该mes的类型是群发消息，开始处理...")
 		sp := SmsProcess{}
 		err = sp.ClientReceiveGroupMes(mes)
 		if err != nil {
@@ -102,7 +102,7 @@ func ClientProcessMes(mes *message.Message) (err error) {
 }
 
 func ClientProcessStateChange(mes *message.Message) (err error) {
-	fmt.Println("ClientProcessStateChange:开始工作...")
+	// fmt.Println("ClientProcessStateChange:开始工作...")
 	//因为已知mes的类型是NotifyUserStatusMesType，所以可直接创建一个NotifyUserStatusMes实例，对mes中的Data部分反序列化
 	Data := mes.Data
 	var stateChangeMes message.NotifyUserStatusMes
@@ -124,10 +124,10 @@ func ClientProcessStateChange(mes *message.Message) (err error) {
 	//为了修改map的value值，需要先取出来原先的值，然后修改之后再放回去
 	v, ok := OnlineUserMap.OnlineUser[userId]
 	if ok {
-		fmt.Println("map中有user，修改状态前", v)
+		// fmt.Println("map中有user，修改状态前", v)
 		v.UserStatus = changeId
 		OnlineUserMap.OnlineUser[userId] = v
-		fmt.Println("map中有user，修改状态后", v)
+		// fmt.Println("map中有user，修改状态后", v)
 	} else {
 		var user message.User = message.User{
 			UserId:     userId,
@@ -135,9 +135,9 @@ func ClientProcessStateChange(mes *message.Message) (err error) {
 			UserStatus: changeId,
 		}
 		OnlineUserMap.OnlineUser[userId] = user
-		fmt.Println("map中无user，添加user", user)
+		// fmt.Println("map中无user，添加user", user)
 	}
-	fmt.Println("此时的在线列表:", OnlineUserMap.OnlineUser)
+	// fmt.Println("此时的在线列表:", OnlineUserMap.OnlineUser)
 
 	return
 }
@@ -148,14 +148,14 @@ func KeepConnection(conn net.Conn) {
 	}
 
 	for {
-		fmt.Println("KeepConnection: the process is keeping connection with server... waiting for the message...")
+		// fmt.Println("KeepConnection: the process is keeping connection with server... waiting for the message...")
 		mes, err := tf.ClientReadPkg()
 		if err != nil {
 			fmt.Println("KeepConnection: Read mes from server err, err =", err)
 			return
 		}
 		//读到了服务器的消息
-		fmt.Println("KeepConnection: get messages from the server: message = ", mes)
+		// fmt.Println("KeepConnection: get messages from the server: message = ", mes)
 		ClientProcessMes(&mes)
 	}
 }

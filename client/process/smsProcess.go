@@ -15,9 +15,9 @@ func (s *SmsProcess) ClientSendGroupMes(content string) (err error) {
 	sendMes.Content = content
 	sendMes.User= CurUser.User
 	// sendMes.User.UserId = CurUser.UserName
-	fmt.Println("*************")
-	fmt.Println("发送给服务器的sendMes：", sendMes)
-	fmt.Println("*************")
+	// fmt.Println("*************")
+	// fmt.Println("发送给服务器的sendMes：", sendMes)
+	// fmt.Println("*************")
 	sendMesData, err := json.Marshal(sendMes)
 	if err != nil {
 		fmt.Println("smsProcess.SendGroupMes(): 序列化内层消息失败，err =", err)

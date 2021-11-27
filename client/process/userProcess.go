@@ -10,7 +10,9 @@ import (
 type UserProcess struct {
 	//字段
 }
-var ipAddress = "10.62.157.41:8889"
+var ipAddress string = "103.46.128.21"
+var port string = "44024"
+var des string = ipAddress + ":" + port
 
 func (u *UserProcess) RigisterFunc() (err error) {
 	//进入注册函数
@@ -30,7 +32,7 @@ func (u *UserProcess) RigisterFunc() (err error) {
 	//1. 连接到服务器
 	fmt.Println("RigisterFunc: 获取到注册请求，正在连接服务器...")
 	// conn, err := net.Dial("tcp", "127.0.0.1:8889")
-	conn, err := net.Dial("tcp", ipAddress)
+	conn, err := net.Dial("tcp", des)
 	if err != nil {
 		fmt.Printf("net.Dial err, err = %v \n", err)
 		return
@@ -121,8 +123,8 @@ func (u *UserProcess) LoginFunc() (err error) {
 	originUserId := userId
 	//1. 连接到服务器
 	fmt.Println("LoginFunc: 获取到登录请求，正在连接服务器...")
-	// conn, err := net.Dial("tcp", "127.0.0.1:8889")
-	conn, err := net.Dial("tcp", ipAddress)
+
+	conn, err := net.Dial("tcp", des)
 	if err != nil {
 		fmt.Printf("net.Dial err, err = %v \n", err)
 		return
