@@ -15,7 +15,7 @@ type Transfer struct {
 }
 
 func (t *Transfer) ClientWritePkg(sendBytes []byte) (err error) {
-	fmt.Println("clientWritePkg: 已获取到字符串sendBytes，开始制作包...")
+	// fmt.Println("clientWritePkg: 已获取到字符串sendBytes，开始制作包...")
 	//要想发送一个包，首先获得其长度，发送该长度变量
 	var dataLen uint32
 	var lenBuff [4]byte
@@ -28,19 +28,19 @@ func (t *Transfer) ClientWritePkg(sendBytes []byte) (err error) {
 		fmt.Println("clientWritePkg: conn.Write([len(Buff)]) err, err =", err)
 		return
 	}
-	fmt.Printf("clientWritePkg: 包的长度是:%v \n", dataLen)
+	// fmt.Printf("clientWritePkg: 包的长度是:%v \n", dataLen)
 
 	_, err = t.Conn.Write(sendBytes)
 	if err != nil {
 		fmt.Println("clientWritePkg: conn.Write(sendBytes) err, err =", err)
 		return
 	}
-	fmt.Println("clientWritePkg: 包发送成功")
+	// fmt.Println("clientWritePkg: 包发送成功")
 	return
 }
 
 func (t *Transfer) ClientReadPkg() (mes message.Message, err error) {
-	fmt.Println("clientReadPkg: 等待服务器返回包...")
+	// fmt.Println("clientReadPkg: 等待服务器返回包...")
 	//读包使用的函数，首先建立一个读取字符的缓存buff
 	// buff := make([]byte, 1024)
 	//阻塞等待客户端发送包
@@ -57,14 +57,14 @@ func (t *Transfer) ClientReadPkg() (mes message.Message, err error) {
 
 	//解析该长度是多少
 	var pkgLen = binary.BigEndian.Uint32(t.Buff[:4])
-	fmt.Println("clientReadPkg: 获取到服务器返回的包头，包的长度为：", pkgLen)
+	// fmt.Println("clientReadPkg: 获取到服务器返回的包头，包的长度为：", pkgLen)
 	//之后收到的包是消息包，将获取到的字节放入buff缓存的前pkgLen个byte
 	_, err = t.Conn.Read(t.Buff[:pkgLen])
 	if err != nil {
 		fmt.Println("conn.Read(buff[:pkgLen]) err, err =", err)
 		return
 	}
-	fmt.Println("clientReadPkg: 获取到服务器返回的包")
+	// fmt.Println("clientReadPkg: 获取到服务器返回的包")
 	//将消息包反序列化，得到message.Message类型的对象mes
 	//该变量有两个内置变量，分别为类型和一个序列化后的message.LoginMes对象
 	err = json.Unmarshal(t.Buff[:pkgLen], &mes)

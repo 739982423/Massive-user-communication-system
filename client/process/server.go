@@ -7,7 +7,7 @@ import (
 	"finalProject/common/message"
 	"fmt"
 	"net"
-	_"os"
+	"os"
 )
 
 var OnlineUserMap *ClientOnlineUser
@@ -34,23 +34,23 @@ func ShowMenu() {
 		fmt.Scanln(&key)
 		switch key {
 		case 1:
-			fmt.Println("\t\t\t1. 显示在线用户列表")
 			ShowOnlineUsers()
 		case 2:
-			fmt.Println("\t\t\t2. 发送消息")
 			var content string
 			fmt.Println("请输入：")
 			fmt.Scanln(&content)
 			sp := SmsProcess{}
 			sp.ClientSendGroupMes(content)
 		case 3:
-			fmt.Println("\t\t\t3. 信息列表")
 			fmt.Println("---------------------------------")
 			fmt.Println(CurUser)
-			fmt.Println("---------------------------------")
 		default:
-			fmt.Println("\t\t\t4. 退出系统")
-			// os.Exit(0)
+			fmt.Print("您真的要退出系统吗？(y/n):")
+			var op string
+			fmt.Scanln(&op)
+			if op == "y" {
+				os.Exit(0)
+			} 	
 		}
 	}
 }

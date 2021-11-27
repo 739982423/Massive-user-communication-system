@@ -37,7 +37,7 @@ func (u *UserProcess) RigisterFunc() (err error) {
 		fmt.Printf("net.Dial err, err = %v \n", err)
 		return
 	}
-	fmt.Println("RigisterFunc: 连接成功，现在开始制作序列化后的注册请求字符串...")
+	// fmt.Println("RigisterFunc: 连接成功，现在开始制作序列化后的注册请求字符串...")
 	//延时关闭连接，记得及时写上
 	defer conn.Close()
 
@@ -69,7 +69,7 @@ func (u *UserProcess) RigisterFunc() (err error) {
 		return
 	}
 
-	fmt.Println("userProcess.RigisterFunc(): 序列化后的注册请求字符串制作完成，将其交给writePkg函数...")
+	// fmt.Println("userProcess.RigisterFunc(): 序列化后的注册请求字符串制作完成，将其交给writePkg函数...")
 	//建立一个可操作读包写包的对象
 	tf := &utils.Transfer{
 		Conn : conn,
@@ -82,7 +82,7 @@ func (u *UserProcess) RigisterFunc() (err error) {
 	}
 
 	//3. 等待服务器回复
-	fmt.Println("userProcess.RigisterFunc(): 调用readPkg函数处理服务器将返回的结果...")
+	// fmt.Println("userProcess.RigisterFunc(): 调用readPkg函数处理服务器将返回的结果...")
 	//ClientReadPkg将阻塞等待服务器回复
 	mes, err = tf.ClientReadPkg()
 	if err != nil {
@@ -91,7 +91,7 @@ func (u *UserProcess) RigisterFunc() (err error) {
 	}
 	
 	//解析服务器返回的包
-	fmt.Println("userProcess.RigisterFunc(): 解析获取到的包...")
+	// fmt.Println("userProcess.RigisterFunc(): 解析获取到的包...")
 	var rigisterResMes message.RigisterResMes
 	err = json.Unmarshal([]byte(mes.Data), &rigisterResMes)
 	if err != nil {
@@ -129,7 +129,7 @@ func (u *UserProcess) LoginFunc() (err error) {
 		fmt.Printf("net.Dial err, err = %v \n", err)
 		return
 	}
-	fmt.Println("LoginFunc: 连接成功，现在开始制作序列化后的登录请求字符串...")
+	// fmt.Println("LoginFunc: 连接成功，现在开始制作序列化后的登录请求字符串...")
 	//fmt.Println("当前连接是：", conn)
 	//延时关闭连接，记得及时写上
 	defer conn.Close()
@@ -160,9 +160,9 @@ func (u *UserProcess) LoginFunc() (err error) {
 		fmt.Println("logindata: json.Marshal err, err = ", err)
 		return
 	}
-	fmt.Println("logindata:", string(logindata))
+	// fmt.Println("logindata:", string(logindata))
 	//2.6 外层结构体组装完毕，将序列化后的mes传给 专门发送包的函数
-	fmt.Println("LoginFunc: 序列化后的登录请求字符串制作完成，将其交给writePkg函数...")
+	// fmt.Println("LoginFunc: 序列化后的登录请求字符串制作完成，将其交给writePkg函数...")
 	tf := &utils.Transfer{
 		Conn : conn,
 	}
@@ -175,14 +175,14 @@ func (u *UserProcess) LoginFunc() (err error) {
 	//3 等待服务器的返回
 	//这里readPkg返回的是message.Message类型的对象，我们要获取服务器返回的信息，需要对其data部分反序列化
 
-	fmt.Println("LoginFunc: 调用readPkg函数处理服务器将返回的结果...")
+	// fmt.Println("LoginFunc: 调用readPkg函数处理服务器将返回的结果...")
 	mes, err = tf.ClientReadPkg()
 	if err != nil {
 		fmt.Println("LoginFunc: readPkg(conn) err, err =", err)
 		return
 	}
 
-	fmt.Println("LoginFunc: 解析获取到的包...")
+	// fmt.Println("LoginFunc: 解析获取到的包...")
 	var loginResMes message.LoginResMes
 	err = json.Unmarshal([]byte(mes.Data), &loginResMes)
 	if err != nil {
@@ -191,7 +191,7 @@ func (u *UserProcess) LoginFunc() (err error) {
 	}
 
 	if loginResMes.Code == 100 {
-		fmt.Println("LoginFunc:", loginResMes.Information)
+		// fmt.Println("LoginFunc:", loginResMes.Information)
 		//登录成功，首先显示一下当前在线用户列表
 		
 		// 创建一个客户端维护的当前在线用户列表
@@ -207,7 +207,7 @@ func (u *UserProcess) LoginFunc() (err error) {
 			userId = val.UserId
 			OnlineUserMap.OnlineUser[userId] = val
 		}
-		fmt.Println("OnlineUserMap.OnlineUser", OnlineUserMap.OnlineUser)
+		// fmt.Println("OnlineUserMap.OnlineUser", OnlineUserMap.OnlineUser)
 		//展示当前在线用户
 		fmt.Println("当前在线的用户有：")
 
