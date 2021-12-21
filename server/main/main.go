@@ -7,8 +7,8 @@ import (
 	"time"
 )
 
-var listeningPort string = "8889"
-var listeningIP string = "10.62.189.111"
+var listeningPort string = "8889"		//监听docker容器内部的端口，在服务器上已设置：服务器端口:11334到容器端口:8889的映射
+var listeningIP string = "172.17.0.3"	//阿里云服务器内网地址
 
 func startGoRoutine(conn net.Conn) {
 	defer conn.Close()
