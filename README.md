@@ -11,7 +11,7 @@
 ### 直接使用：
 因为服务器端已经部署在阿里云服务器上了，所以可以直接执行目录下的client.exe进行聊天室登录。     
 服务器的部署使用docker容器进行部署(golang1.17 + redis6.26)，对应的镜像也公开在阿里云。    
-拉取指令为：```docker pull```
+拉取指令为：```docker pull registry.cn-beijing.aliyuncs.com/pj_project/go_project:01```
 
 
 ### 自己编译-使用方法：
