@@ -10,8 +10,8 @@ import (
 type UserProcess struct {
 	//字段
 }
-var ipAddress string = "103.46.128.21"
-var port string = "44024"
+var ipAddress string = "182.92.234.82"
+var port string = "11334"
 var des string = ipAddress + ":" + port
 
 func (u *UserProcess) RigisterFunc() (err error) {
